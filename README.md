@@ -175,6 +175,150 @@ Webmail
 🙌 Credits
 Inspired by the original TorDrop.sh and enhanced for broader threat coverage and high performance environments.
 
+# 🌍 GeoBlock.sh
+
+Country-based firewall for Linux using ipset + iptables
+Allow only selected countries, block the rest. Simple. Powerful. Efficient.
+
+✅ Purpose
+GeoBlock.sh is a country-level traffic control script for Linux servers.
+It creates a whitelist of countries using ipset and blocks all other traffic by default via iptables.
+
+This is perfect for:
+
+E-commerce platforms (like WordPress + WooCommerce)
+
+APIs and admin panels restricted to specific regions
+
+Servers exposed to the internet but meant for regional access only
+
+🌐 How It Works
+Defines a list of allowed countries, e.g.:
+
+European Union (EU)
+
+Mexico 🇲🇽, Argentina 🇦🇷, Brazil 🇧🇷
+
+United States 🇺🇸, Japan 🇯🇵
+
+Fetches country IP blocks from ipdeny.com
+
+Builds an ipset set (geoallow) with all allowed IP ranges
+
+Applies iptables rules:
+
+Accept all traffic from the allowed countries
+
+Drop everything else
+
+Logs all actions to /var/log/geoblock.log
+
+Saves the ipset set to /etc/iptables/GeoBlock.ipset for persistent reloading after reboot
+
+⚙️ Features
+✅ Block-by-default policy
+
+🌎 Easily configurable list of allowed countries
+
+⚡ Fast and efficient thanks to ipset
+
+🛠 Integrates with existing firewalls
+
+📝 Full logging for traceability
+
+🔁 Persistence-ready (via systemd)
+
+🧩 Dependencies
+ipset
+
+iptables
+
+curl
+
+Bash shell
+
+Install them with:
+
+
+apt update
+apt install ipset iptables curl
+🚀 Usage
+
+chmod +x GeoBlock.sh
+./GeoBlock.sh
+This will:
+
+Create the geoallow ipset set
+
+Load country IP blocks
+
+Add the iptables rules
+
+Save the rules to a persistent file
+
+🔄 Persistence with systemd
+To reload after reboot, use this service:
+
+/etc/systemd/system/geoblock.service
+
+
+[Unit]
+Description=Restore GeoBlock ipset rules
+After=network.target
+
+[Service]
+Type=oneshot
+ExecStart=/bin/bash -c '/sbin/ipset flush geoallow && /sbin/ipset restore < /etc/iptables/GeoBlock.ipset'
+
+[Install]
+WantedBy=multi-user.target
+Then:
+
+
+systemctl daemon-reload
+systemctl enable geoblock
+📋 Logging
+All events are logged to:
+
+/var/log/geoblock.log
+
+Example:
+
+[2025-05-23 01:09:07] Loading IPs for country: br
+[2025-05-23 01:10:59] Added iptables ACCEPT rule for geoallow
+[2025-05-23 01:10:59] Added iptables DROP rule (default deny)
+[2025-05-23 01:10:59] GeoBlock execution completed.
+🔐 Default Allowed Countries
+By default, the script includes:
+
+EU member states (AT, BE, DE, FR, etc.)
+
+🇲🇽 Mexico
+
+🇦🇷 Argentina
+
+🇧🇷 Brazil
+
+🇺🇸 United States
+
+🇯🇵 Japan
+
+You can edit the list in the script by modifying:
+
+ALLOW_COUNTRIES=(at be bg hr cy cz dk ee fi fr de gr hu ie it lv lt lu mt nl pl pt ro sk si es se mx ar br us jp)
+📦 Future Ideas
+Interactive country selector
+
+Integration with GeoIP databases (MaxMind)
+
+Logging by rejected country
+
+Scheduled updates via cron
+
+
+
+
+
 
 
 [ CodeName : #Aracne ]
